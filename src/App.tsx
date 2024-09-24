@@ -1,26 +1,16 @@
-import "./App.css";
-import { Editor, EditorProps } from "@monaco-editor/react";
-
-const monacoOptions: EditorProps["options"] = {
-  scrollbar: {
-    alwaysConsumeMouseWheel: false,
-    verticalScrollbarSize: 10,
-  },
-  minimap: { enabled: false },
-  fontSize: 13,
-};
+import { useState } from "react";
+import { CompressedInfo } from "./CompressedInfo";
+import { Editor } from "./Editor";
 
 function App() {
+  const [source, setSource] = useState(
+    "// some comment\nconst a = 1;\nconst b = 2;\nconsole.log(a + b);",
+  );
+
   return (
-    <div>
-      <Editor
-        height="90vh"
-        defaultLanguage="typescript"
-        path={"index.js"}
-        defaultValue="// some comment"
-        options={monacoOptions}
-        language="typescript"
-      />
+    <div className="grid grid-cols-2 divide-x">
+      <Editor value={source} onChange={setSource} />
+      <CompressedInfo source={source} />
     </div>
   );
 }
