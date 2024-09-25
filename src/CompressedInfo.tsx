@@ -36,7 +36,6 @@ export const CompressedInfo: FC<{
   );
 
   useEffect(() => {
-    console.log("source", source);
     Promise.all([
       lzstring.compressToBase64(source),
       lzstring.compressToUTF16(source),

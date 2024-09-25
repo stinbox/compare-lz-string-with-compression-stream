@@ -1,8 +1,7 @@
-import { useCallback } from "react";
-import { CompressedInfo } from "./CompressedInfo";
-import { Editor } from "./Editor";
-import { useSearchParams } from "react-router-dom";
+import { Suspense, useMemo } from "react";
 import { FaGithub } from "react-icons/fa6";
+import { decompressFromEncodedURIComponent } from "./compression";
+import { AppBody } from "./AppBody";
 
 const defaultSource = `const data =
   \`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
@@ -10,15 +9,16 @@ const defaultSource = `const data =
 🧑‍🧑‍🧒‍🧒\`;`;
 
 function App() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const source = searchParams.get("source") ?? defaultSource;
-  const setSource = useCallback(
-    (source: string) => {
-      setSearchParams({ source }, { replace: true });
-    },
-    [setSearchParams],
-  );
+  const defaultSourcePromise = useMemo<Promise<string>>(async () => {
+    const searchParams = new URLSearchParams(window.location.search);
+    const fromParams = searchParams.get("source");
+    if (!fromParams) return defaultSource;
+    try {
+      return await decompressFromEncodedURIComponent(fromParams);
+    } catch {
+      return defaultSource;
+    }
+  }, []);
 
   return (
     <div className="grid grid-cols-2 divide-x min-w-[1200px] h-dvh grid-rows-[auto_1fr]">
@@ -35,12 +35,9 @@ function App() {
           <FaGithub className="size-7" />
         </a>
       </header>
-      <div>
-        <Editor value={source} onChange={setSource} />
-      </div>
-      <div className="h-full overflow-auto">
-        <CompressedInfo source={source} />
-      </div>
+      <Suspense>
+        <AppBody defaultSourcePromise={defaultSourcePromise} />
+      </Suspense>
     </div>
   );
 }
