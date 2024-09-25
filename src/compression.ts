@@ -37,15 +37,29 @@ export async function compressToUTF16(input: string): Promise<string> {
   const compression = new CompressionStream("deflate");
   upstream.pipeThrough(compression);
   const compressed = await new Response(compression.readable).arrayBuffer();
-  const compressedBytes = new Uint16Array(compressed);
-  return String.fromCharCode(...compressedBytes);
+
+  let compressedBytes = new Uint8Array(compressed);
+
+  if (compressedBytes.length % 2 !== 0) {
+    const paddedBytes = new Uint8Array(compressedBytes.length + 1);
+    paddedBytes.set(compressedBytes);
+    paddedBytes[compressedBytes.length] = 0; // 奇数個配列の場合、最後のバイトに 0 をパディング
+    compressedBytes = paddedBytes;
+  }
+
+  const compressedUint16Array = new Uint16Array(compressedBytes.buffer);
+  return String.fromCharCode(...compressedUint16Array);
 }
 
 export async function decompressFromUTF16(input: string): Promise<string> {
   const compressedUint16Array = new Uint16Array(
     input.split("").map((c) => c.charCodeAt(0)),
   );
-  const compressedBytes = new Uint8Array(compressedUint16Array.buffer);
+  let compressedBytes = new Uint8Array(compressedUint16Array.buffer);
+
+  if (compressedBytes[compressedBytes.length - 1] === 0) {
+    compressedBytes = compressedBytes.slice(0, compressedBytes.length - 1); // パディングされた 0 を削除
+  }
 
   const upstream = createUpstream(compressedBytes);
   const decompression = new DecompressionStream("deflate");
