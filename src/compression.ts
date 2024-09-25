@@ -13,8 +13,8 @@ const createUpstream = (value: unknown) => {
 export async function compressToBase64(input: string): Promise<string> {
   const upstream = createUpstream(textEncoder.encode(input));
   const compression = new CompressionStream("deflate");
-  upstream.pipeThrough(compression);
-  const compressed = await new Response(compression.readable).arrayBuffer();
+  const stream = upstream.pipeThrough(compression);
+  const compressed = await new Response(stream).arrayBuffer();
   return btoa(
     new Uint8Array(compressed).reduce(
       (acc, c) => acc + String.fromCharCode(c),
@@ -27,16 +27,16 @@ export async function decompressFromBase64(input: string): Promise<string> {
   const compressedBytes = Uint8Array.from(atob(input), (c) => c.charCodeAt(0));
   const upstream = createUpstream(compressedBytes);
   const decompression = new DecompressionStream("deflate");
-  upstream.pipeThrough(decompression);
-  const decompressed = await new Response(decompression.readable).arrayBuffer();
+  const stream = upstream.pipeThrough(decompression);
+  const decompressed = await new Response(stream).arrayBuffer();
   return textDecoder.decode(decompressed);
 }
 
 export async function compressToUTF16(input: string): Promise<string> {
   const upstream = createUpstream(textEncoder.encode(input));
   const compression = new CompressionStream("deflate");
-  upstream.pipeThrough(compression);
-  const compressed = await new Response(compression.readable).arrayBuffer();
+  const stream = upstream.pipeThrough(compression);
+  const compressed = await new Response(stream).arrayBuffer();
 
   let compressedBytes = new Uint8Array(compressed);
 
@@ -63,16 +63,16 @@ export async function decompressFromUTF16(input: string): Promise<string> {
 
   const upstream = createUpstream(compressedBytes);
   const decompression = new DecompressionStream("deflate");
-  upstream.pipeThrough(decompression);
-  const decompressed = await new Response(decompression.readable).arrayBuffer();
+  const stream = upstream.pipeThrough(decompression);
+  const decompressed = await new Response(stream).arrayBuffer();
   return textDecoder.decode(decompressed);
 }
 
 export async function compressToUint8Array(input: string): Promise<Uint8Array> {
   const upstream = createUpstream(textEncoder.encode(input));
   const compression = new CompressionStream("deflate");
-  upstream.pipeThrough(compression);
-  const compressed = await new Response(compression.readable).arrayBuffer();
+  const stream = upstream.pipeThrough(compression);
+  const compressed = await new Response(stream).arrayBuffer();
   return new Uint8Array(compressed);
 }
 
@@ -81,8 +81,8 @@ export async function decompressFromUint8Array(
 ): Promise<string> {
   const upstream = createUpstream(input);
   const decompression = new DecompressionStream("deflate");
-  upstream.pipeThrough(decompression);
-  const decompressed = await new Response(decompression.readable).arrayBuffer();
+  const stream = upstream.pipeThrough(decompression);
+  const decompressed = await new Response(stream).arrayBuffer();
   return textDecoder.decode(decompressed);
 }
 
