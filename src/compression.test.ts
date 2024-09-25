@@ -9,20 +9,19 @@ import {
   decompressFromUTF16,
   decompressFromUint8Array,
 } from "./compression";
+import { toBase64 } from "./to-base64";
 
-const data =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。👪️";
+const data = `const data =
+  \`Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+あのイーハトーヴォのすきとおった風、夏でも底に冷たさをもつ青いそら、うつくしい森で飾られたモリーオ市、郊外のぎらぎらひかる草の波。
+🧑‍🧑‍🧒‍🧒\`;`;
 
 describe("compression", () => {
   it("base64", async () => {
     const compressed = await compressToBase64(data);
     const decompressed = await decompressFromBase64(compressed);
 
-    const dataBase64 = btoa(
-      new TextEncoder()
-        .encode(data)
-        .reduce((acc, c) => acc + String.fromCharCode(c), ""),
-    );
+    const dataBase64 = toBase64(data);
 
     console.log({
       beforeSize: dataBase64.length,

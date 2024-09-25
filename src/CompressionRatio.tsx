@@ -1,17 +1,18 @@
 export const CompressionRatio: React.FC<{
-  percentage: number | "none";
-}> = ({ percentage: _percentage }) => {
-  const percentage =
-    typeof _percentage === "number"
-      ? Math.max(0, Math.round(_percentage))
-      : "none";
+  ratio: number | "nan";
+}> = ({ ratio }) => {
+  const actualPercentage =
+    typeof ratio === "number" ? Math.max(0, Math.round(ratio * 100)) : "nan";
+
+  const percentageUpTo100 =
+    actualPercentage === "nan" ? "nan" : Math.min(actualPercentage, 100);
 
   const ratioLevel =
-    percentage === "none"
-      ? "none"
-      : percentage <= 50
+    actualPercentage === "nan"
+      ? "nan"
+      : actualPercentage <= 50
       ? "safe"
-      : percentage > 50 && percentage <= 80
+      : actualPercentage > 50 && actualPercentage <= 80
       ? "warning"
       : "danger";
 
@@ -19,13 +20,13 @@ export const CompressionRatio: React.FC<{
     <div>
       <div
         role="progressbar"
-        aria-valuenow={percentage === "none" ? 0 : percentage}
+        aria-valuenow={actualPercentage === "nan" ? 0 : actualPercentage}
         aria-valuemin={0}
         aria-valuemax={100}
         className={cx(
           "w-full h-3.5 rounded-full relative",
           {
-            none: "bg-gray-200",
+            nan: "bg-gray-200",
             safe: "bg-green-200",
             warning: "bg-yellow-200",
             danger: "bg-red-200",
@@ -34,32 +35,35 @@ export const CompressionRatio: React.FC<{
       >
         <div
           className={cx(
-            "h-full rounded-full transition-all starting:w-0",
+            "h-full rounded-full transition-all",
             {
-              none: "bg-gray-500",
+              nan: "bg-gray-500",
               safe: "bg-green-500",
               warning: "bg-yellow-500",
               danger: "bg-red-500",
             }[ratioLevel],
           )}
-          style={{ width: `${percentage}%` }}
+          style={{
+            width: percentageUpTo100 === "nan" ? 0 : `${percentageUpTo100}%`,
+          }}
         />
       </div>
       <span
         className={cx(
-          "relative font-bold text-xs inline-block px-1 py-0.5 rounded border-2 -translate-x-1/2 mt-1",
+          "relative font-bold text-xs inline-block px-1 py-0.5 rounded border-2 mt-1",
           {
-            none: "bg-gray-200 text-gray-600 border-gray-300",
+            nan: "bg-gray-200 text-gray-600 border-gray-300",
             safe: "bg-green-100 text-green-800 border-green-300",
             warning: "bg-yellow-100 text-yellow-600 border-yellow-300",
             danger: "bg-red-100 text-red-600 border-red-300",
           }[ratioLevel],
+          actualPercentage !== "nan" && "-translate-x-1/2",
         )}
         style={{
-          left: `${percentage}%`,
+          left: percentageUpTo100 === "nan" ? 0 : `${percentageUpTo100}%`,
         }}
       >
-        {percentage}%
+        {actualPercentage === "nan" ? "NaN" : `${actualPercentage}%`}
       </span>
     </div>
   );

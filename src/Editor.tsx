@@ -17,6 +17,7 @@ const monacoOptions: MonacoEditorProps["options"] = {
   },
   minimap: { enabled: false },
   fontSize: 13,
+  padding: { top: 8, bottom: 8 },
 };
 
 const tscOptions = {
@@ -39,7 +40,6 @@ export const Editor: React.FC<{
       tscOptions,
     );
 
-    console.log(ReactTypeDefinitionFile);
     monaco?.languages.typescript.typescriptDefaults.addExtraLib(
       ReactTypeDefinitionFile,
       "file:///node_modules/@types/react/index.d.ts",
@@ -48,7 +48,7 @@ export const Editor: React.FC<{
 
   return (
     <MonacoEditor
-      height="90vh"
+      height="100%"
       defaultLanguage="typescript"
       path={"index.tsx"}
       value={value}
