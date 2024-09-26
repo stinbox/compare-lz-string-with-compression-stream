@@ -82,4 +82,8 @@ describe("compression", () => {
 
     expect(decompressed).toBe(data);
   });
+
+  it("それでは", async () => {
+    console.log(await decompressFromUTF16("鱸ᬁ꾉臣Ꞝ룧ꦃ苣閃苣膼䰉됒"));
+  });
 });
