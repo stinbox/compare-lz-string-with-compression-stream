@@ -17,7 +17,7 @@ export const AppBody: React.FC<{
       const params = new URLSearchParams({
         source: compressed,
       });
-      navigate({ search: params.toString() });
+      navigate({ search: params.toString() }, { replace: true });
     });
   }, [navigate, source]);
 
