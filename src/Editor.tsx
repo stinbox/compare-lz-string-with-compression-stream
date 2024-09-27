@@ -1,14 +1,8 @@
 import {
-  loader,
   Editor as MonacoEditor,
   EditorProps as MonacoEditorProps,
-  useMonaco,
 } from "@monaco-editor/react";
-import { memo, useEffect } from "react";
-import * as monaco from "monaco-editor";
-import ReactTypeDefinitionFile from "../node_modules/@types/react/index.d.ts?raw";
-
-loader.config({ monaco });
+import { memo } from "react";
 
 const monacoOptions: MonacoEditorProps["options"] = {
   scrollbar: {
@@ -18,34 +12,13 @@ const monacoOptions: MonacoEditorProps["options"] = {
   minimap: { enabled: false },
   fontSize: 13,
   padding: { top: 8, bottom: 8 },
-};
-
-const tscOptions = {
-  allowNonTsExtensions: true,
-  target: monaco.languages.typescript.ScriptTarget.ES2015,
-  moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
-  jsx: monaco.languages.typescript.JsxEmit.Preserve,
-  typeRoots: ["node_modules/@types"],
-  allowSyntheticDefaultImports: true,
+  renderValidationDecorations: "off",
 };
 
 export const Editor: React.FC<{
   value: string;
   onChange: (value: string) => void;
 }> = memo(({ value, onChange }) => {
-  const monaco = useMonaco();
-
-  useEffect(() => {
-    monaco?.languages.typescript.typescriptDefaults.setCompilerOptions(
-      tscOptions,
-    );
-
-    monaco?.languages.typescript.typescriptDefaults.addExtraLib(
-      ReactTypeDefinitionFile,
-      "file:///node_modules/@types/react/index.d.ts",
-    );
-  }, [monaco]);
-
   return (
     <MonacoEditor
       height="100%"
